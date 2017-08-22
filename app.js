@@ -43,28 +43,29 @@ app.get("/", function(req, res) {
 
 app.post("/", function(req, res) {
   const addtodo = req.body.newtodo;
-  let max = 0
-  for (var i = 0; i < todos.length; i++) {
-    if (max < todos[i].id) {
-      max = todos[i].id
-    }
-  }
-  let todonew = {
-    name: addtodo,
-    done: false,
-    id: max + 1
-  }
+  // let max = 0
+  // for (var i = 0; i < todos.length; i++) {
+  //   if (max < todos[i].id) {
+  //     max = todos[i].id
+  //   }
+  // }
   let collection = database.collection('todos');
   collection.find({}).toArray(function(err, todos){
-    collection.updateOne()(function(err, result) {
-      assert.equal(err, null);
-      assert.equal(1, result.result.n);
+    let todonew = {
+      name: addtodo,
+      done: false,
+      id: todos.length 
+    }
+    collection.insertOne(todonew),function(err, result){
       console.log("Updated the document with a new todo");
-    res.render('list', {todos});
-  })
+    res.render('list', {todonew});
+  }
+
+})
   res.redirect('/')
 })
-})
+
+
 
 app.post("/:id", function(req, res) {
   let id = parseInt(req.params.id)

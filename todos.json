@@ -1,11 +1,11 @@
 {
     name: "Finish Daily Project",
     done: false,
-    id: 1
+    id: 0
   }
-  
+
   {
     name: "Feed the Dogs",
     done: true,
-    id: 2
+    id: 1
   }

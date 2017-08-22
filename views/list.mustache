@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>New To Do List</title>
+  <link rel="stylesheet" href="/public/CSS/styles.css">
+</head>
+
+<body>
+  <!-- form to add a new todo -->
+  <div class="todo">
+    <form class="form" action="/" method="post">
+      <div><input type="text" name="newtodo" placeholder="Add a To Do" value="">
+        <input type="submit" name="button" value="Add To do"></div>
+    </form>
+    <!-- form to move to completed section -->
+      <ul>
+        {{#todos}}
+        {{^done}}
+        <form class="form" action="/{{id}}" method='post'>
+          <li><button type="submit" name="completebutton">Marked as Complete</button> {{name}}
+          </li>
+        </form>
+          {{/done}}
+        {{/todos}}
+      </ul>
+      <h3>Completed Tasks</h3>
+      <ul>
+        {{#todos}}
+        {{#done}}
+        <li>
+        {{name}}
+      </li>
+        {{/done}}
+        {{/todos}}
+      </ul>
+  </div>
+</body>
+
+</html>

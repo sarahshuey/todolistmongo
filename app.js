@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const mustacheExpress = require('mustache-express');
 const app = express();
+const MongoClient = require('mongodb').MongoClient
+  , assert = require('assert');
+const url = 'mongodb://localhost:27017/todo';
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -14,20 +18,27 @@ app.engine('mustache', mustacheExpress());
 app.set('views', './views')
 app.set('view engine', 'mustache')
 
-const todos = [{
-    name: "Finish Daily Project",
-    done: false,
-    id: 1
-  },
-  {
-    name: "Feed the Dogs",
-    done: true,
-    id: 2
-  }
-];
+// const todos = [{
+//     name: "Finish Daily Project",
+//     done: false,
+//     id: 1
+//   },
+//   {
+//     name: "Feed the Dogs",
+//     done: true,
+//     id: 2
+//   }
+// ];
 const completedTODO = [];
 app.get("/", function(req, res) {
-  res.render('list', {todos: todos});
+  let collection = database.collection('todos');
+  // getting the todo list from mongo
+  collection.find({}).toArray(function(err, todos) {
+    assert.equal(err, null);
+    console.log("Found the following records");
+    console.log(todos)
+    res.render('list', {todos});
+  });
 });
 
 app.post("/", function(req, res) {
@@ -38,14 +49,22 @@ app.post("/", function(req, res) {
       max = todos[i].id
     }
   }
-  let todo = {
+  let todonew = {
     name: addtodo,
     done: false,
     id: max + 1
   }
-  todos.push(todo);
-  res.redirect('/');
-});
+  let collection = database.collection('todos');
+  collection.find({}).toArray(function(err, todos){
+    collection.updateOne()(function(err, result) {
+      assert.equal(err, null);
+      assert.equal(1, result.result.n);
+      console.log("Updated the document with a new todo");
+    res.render('list', {todos});
+  })
+  res.redirect('/')
+})
+})
 
 app.post("/:id", function(req, res) {
   let id = parseInt(req.params.id)
@@ -67,4 +86,19 @@ app.post("/:id", function(req, res) {
 
 app.listen(3000, function() {
   console.log('Successfully started express appslication!');
+});
+
+let database;
+MongoClient.connect(url, function(err, todo) {
+  assert.equal(null, err);
+  console.log("Connected successfully to server");
+
+  database = todo
+});
+process.on('SIGINT', function() {
+  console.log("\nshutting down");
+  database.close(function () {
+    console.log('mongodb disconnected on app termination');
+    process.exit(0);
+  });
 });

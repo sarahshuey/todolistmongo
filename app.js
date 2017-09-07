@@ -1,3 +1,5 @@
+//boiler plate
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
@@ -18,17 +20,8 @@ app.engine('mustache', mustacheExpress());
 app.set('views', './views')
 app.set('view engine', 'mustache')
 
-// const todos = [{
-//     name: "Finish Daily Project",
-//     done: false,
-//     id: 1
-//   },
-//   {
-//     name: "Feed the Dogs",
-//     done: true,
-//     id: 2
-//   }
-// ];
+
+//sends you to the root page
 const completedTODO = [];
 app.get("/", function(req, res) {
   let collection = database.collection('todos');
@@ -41,20 +34,15 @@ app.get("/", function(req, res) {
   });
 });
 
+//adds a new item to the todo list
 app.post("/", function(req, res) {
   const addtodo = req.body.newtodo;
-  // let max = 0
-  // for (var i = 0; i < todos.length; i++) {
-  //   if (max < todos[i].id) {
-  //     max = todos[i].id
-  //   }
-  // }
   let collection = database.collection('todos');
   collection.find({}).toArray(function(err, todos){
     let todonew = {
       name: addtodo,
       done: false,
-      id: todos.length 
+      id: todos.length
     }
     collection.insertOne(todonew),function(err, result){
       console.log("Updated the document with a new todo");
@@ -66,7 +54,7 @@ app.post("/", function(req, res) {
 })
 
 
-
+//this takes the id and allows you update the todo to true and move it to complete
 app.post("/:id", function(req, res) {
   let id = parseInt(req.params.id)
   // let idn = number(id)
@@ -81,14 +69,17 @@ app.post("/:id", function(req, res) {
       console.log("setting " + todo.name + " to true");
     }
   })
-  // res.redirect('/');
-  res.render('list', {todos: todos});
+  res.render('list', {todos: to});
 });
 
+
+//where we are listening
 app.listen(3000, function() {
   console.log('Successfully started express appslication!');
 });
 
+
+//boiler plate
 let database;
 MongoClient.connect(url, function(err, todo) {
   assert.equal(null, err);
